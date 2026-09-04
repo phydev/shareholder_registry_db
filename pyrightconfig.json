@@ -1,0 +1,10 @@
+{
+  "typeCheckingMode": "standard",
+  "exclude": ["**/migrations"],
+  "reportAttributeAccessIssue": "warning",
+  "reportMissingParameterType": "error",
+  "reportMissingReturnType": "error",
+  "venvPath": ".",
+  "venv": ".venv",
+  "extraPaths": ["src"]
+}

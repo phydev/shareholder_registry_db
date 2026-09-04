@@ -1,0 +1,33 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies (install these fresh inside the container)
+node_modules/
+vendor/
+
+# Local configuration and production secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Build output directories and binaries
+dist/
+build/
+out/
+bin/
+obj/
+
+# Logs and diagnostics
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Testing artifacts
+coverage/
+.pytest_cache/
+
+# OS-generated files
+.DS_Store
+Thumbs.db

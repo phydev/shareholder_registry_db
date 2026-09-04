@@ -1,0 +1,69 @@
+[project]
+name = "shareholder_registry"
+version = "0.1.0"
+description = "Aksjonærregisteret Database"
+authors = [
+    {name = "Mauricio Moreira Soares"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "duckdb"
+]
+license = { text = "Proprietary" }
+keywords = [
+  "python",
+  "django",
+  "webapp"
+]
+
+
+[tool.poetry]
+package-mode = false
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^26.5.1"
+mypy = "^2.1.0"
+pyright = "^1.1.410"
+pytest-django = "^4.12.0"
+pytest-cov = "^7.1.0"
+ruff = "^0.15.16"
+ruff-lsp = "^0.0.62"
+types-requests = "^2.33.0.20260518"
+django-stubs = "^6.0.5"
+ipython = "^9.14.1"
+django-silk = "^5.5.0"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle: style errors (spacing, indentation, blank lines, etc.)
+  "F",   # Pyflakes: real errors like undefined/unused names and imports
+  "I",   # isort: import sorting and grouping
+  "UP",  # pyupgrade: modernize syntax for your target Python version
+  "B",   # flake8-bugbear: likely bugs and bad patterns
+  "ANN", # flake8-annotations: type annotation checks
+]
+ignore = ["ARG002"] # Allow unused parameters in handlers (e.g. `request` in views)
+
+[tool.ruff.lint.isort]
+known-first-party = ["shareholder_registry"]
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py", "*_test.py"]
+addopts = "--reuse-db --nomigrations --no-header -rfsx --cov=shareholder_registry --cov-report=term-missing --cov-report=html"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["src/shareholder_registry/tests/*", "src/shareholder_registry/migrations/*"]
