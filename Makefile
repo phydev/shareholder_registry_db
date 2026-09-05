@@ -28,15 +28,17 @@ tf-plan:
 	cd infrastructure
 	terraform plan
 
+tf-init:
+	@echo "$(BOLD)$(CYAN)► terraform init$(RESET)"
+	cd infrastructure && terraform init
+
 tf-deploy:
 	@echo "$(BOLD)$(CYAN)► terraform apply$(RESET)"
-	cd infrastructure
-	terraform apply
+	cd infrastructure && terraform apply
 
 tf-format:
 	@echo "$(BOLD)$(CYAN)► terraform format$(RESET)"
-	cd infrastructure
-	terraform fmt
+	cd infrastructure && terraform fmt
 
 prune:
 	podman system prune -a --volumes
@@ -145,6 +147,7 @@ fmt:
 ## Fix – auto-fix all safe lint violations, then auto-format.
 fix:
 	@echo "$(BOLD)$(CYAN)► ruff check --fix$(RESET)"
+	$(RUFF) check --fix $(SRC_DIRS)
 
 
 

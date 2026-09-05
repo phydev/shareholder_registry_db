@@ -1,15 +1,17 @@
 import uuid
 from uuid import UUID
-from sqlmodel import Field, SQLModel, Date
-from datetime import date
+
+from sqlmodel import Field, SQLModel
+
 
 class Shares(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    id_shareholder: UUID = Field(foreign_key="Shareholder.id")
 
-    id_company: UUID = Field(default_factory=uuid.uuid4, foreign_key="Company.id")
+    id_shareholder: UUID = Field(foreign_key="shareholder.id")
 
-    year: date.year = Field(description="Snaptshot year")
+    id_company: UUID = Field(default_factory=uuid.uuid4, foreign_key="company.id")
+
+    year: str = Field(max_length=4, description="Snaptshot year")
 
     share_class: str = Field(
         ..., max_length=100, description="Share class or ISIN for the share class"

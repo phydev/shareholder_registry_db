@@ -8,8 +8,8 @@ terraform {
 }
 
 # Create a shared network
-resource "docker_network" "network_layer" {
-  name = "network_layer"
+resource "docker_network" "shared_network" {
+  name = "shared_network"
 }
 
 resource "docker_image" "postgres_image" {

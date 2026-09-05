@@ -1,3 +1,8 @@
+variable "db_postgres" {
+  type = string
+  sensitive = false
+}
+
 variable "db_admin_user" {
   type      = string
   sensitive = true
