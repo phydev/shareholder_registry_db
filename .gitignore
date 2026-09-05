@@ -264,3 +264,8 @@ terraform.rc
 # planout
 .idea
 .DS_store*
+
+## data
+*.csv
+*.json
+*.parquet
