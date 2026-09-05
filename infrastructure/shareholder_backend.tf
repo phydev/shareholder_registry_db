@@ -8,7 +8,8 @@ resource "docker_container" "ar_backend" {
     "POSTGRES_DB=${var.db_postgres}",
     "POSTGRES_USER=${var.db_admin_user}",
     "POSTGRES_PASSWORD=${var.db_admin_password}",
-    "POSTGRES_HOST=${var.db_host}"
+    "POSTGRES_HOST=${var.db_host}",
+    "POSTGRES_PORT=${var.db_port}"
   ]
 
   ports {

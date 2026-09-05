@@ -7,13 +7,14 @@ resource "docker_container" "postgresdb" {
   }
 
   ports {
-    internal = 5432
-    external = 5432
+    internal = var.db_port
+    external = var.db_port
   }
   env = [
     "POSTGRES_DB=${var.db_postgres}",
     "POSTGRES_USER=${var.db_admin_user}",
     "POSTGRES_PASSWORD=${var.db_admin_password}",
-    "POSTGRES_HOST=${var.db_host}"
+    "POSTGRES_HOST=${var.db_host}",
+    "POSTGRES_PORT=${var.db_port}"
   ]
 }

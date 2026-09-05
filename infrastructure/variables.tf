@@ -18,22 +18,8 @@ variable "db_host" {
   sensitive = false
 }
 
-variable "home_dir" {
+variable "db_port" {
   type      = string
   sensitive = false
 }
 
-variable "minio_root_user" {
-  type      = string
-  sensitive = true
-}
-
-variable "minio_root_password" {
-  type      = string
-  sensitive = true
-}
-
-variable "unitycatalog_ui_path" {
-  type      = string
-  sensitive = false
-}
