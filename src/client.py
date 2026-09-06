@@ -6,7 +6,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from settings import POSTGRES_DB, POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_USER
-from src.logging import setup_logger
+from logger import setup_logger
 
 setup_logger()
 
@@ -83,9 +83,12 @@ class SQLClient:
         else:
             params = {**lookup_kwargs, **update_values}
             instance = model(**params)
-            self.session.add(instance)
             created = True
 
-        self.session.commit()
-        self.session.refresh(instance)
         return instance, created
+
+    def commit(self) -> None:
+        self.session.commit()
+
+    def refresh(self, instance: Any) -> None:
+        self.session.refresh(instance)
