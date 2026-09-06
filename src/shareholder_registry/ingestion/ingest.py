@@ -1,12 +1,11 @@
 import csv
-import re
 import logging
+import re
 
 from client import SQLClient
-from shareholder_registry.models import Company, Person, Part, Shares
-from shareholder_registry.ingestion.parsers import parse_address
-
 from logger import setup_logger
+from shareholder_registry.ingestion.parsers import parse_address
+from shareholder_registry.models import Company, Part, Person, Shares
 
 setup_logger()
 

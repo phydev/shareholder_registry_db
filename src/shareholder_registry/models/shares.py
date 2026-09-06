@@ -14,5 +14,5 @@ class Shares(SQLModel, table=True):
     shares_owned: int
     total_shares_in_company: int
 
-    part: "Part" = Relationship(back_populates="investments")
-    company: "Company" = Relationship(back_populates="shareholders")
+    part: "Part" = Relationship(back_populates="investments") # noqa: F821
+    company: "Company" = Relationship(back_populates="shareholders") # noqa: F821

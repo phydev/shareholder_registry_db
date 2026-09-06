@@ -1,8 +1,10 @@
+import logging
+
 from eralchemy2 import render_er
 from sqlmodel import SQLModel
-from shareholder_registry.models import Company, Part, Person, Shares # noqa: F401
-import logging
+
 from logger import setup_logger
+from shareholder_registry.models import Company, Part, Person, Shares  # noqa: F401
 
 setup_logger(logging.INFO)
 

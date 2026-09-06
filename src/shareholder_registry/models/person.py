@@ -21,4 +21,4 @@ class Person(SQLModel, table=True):
         description=("Birth year for shareholders identified in the National Registry"),
     )
 
-    part: "Part" = Relationship(back_populates="as_person")
+    part: "Part" = Relationship(back_populates="as_person") # noqa: F821

@@ -1,7 +1,6 @@
 import uuid
+from typing import TYPE_CHECKING
 from uuid import UUID
-
-from typing import List, TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -21,6 +20,6 @@ class Company(SQLModel, table=True):
         ..., max_length=9, description="Organization number", unique=True
     )
 
-    part: "Part" = Relationship(back_populates="as_company")
+    part: "Part" = Relationship(back_populates="as_company") # noqa: F821
 
-    shareholders: List["Shares"] = Relationship(back_populates="company")
+    shareholders: list["Shares"] = Relationship(back_populates="company") # noqa: F821

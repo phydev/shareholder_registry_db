@@ -1,4 +1,3 @@
-import pytest
 from src.shareholder_registry.ingestion.parsers import parse_address
 
 

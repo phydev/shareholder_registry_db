@@ -1,12 +1,13 @@
 import uuid
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
-from typing import List, Optional, TYPE_CHECKING
+
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .shares import Shares
-    from .person import Person
     from .company import Company
+    from .person import Person
+    from .shares import Shares
 
 
 class Part(SQLModel, table=True):
@@ -21,7 +22,7 @@ class Part(SQLModel, table=True):
         ..., max_length=3, description="Country code", nullable=True
     )
 
-    investments: List["Shares"] = Relationship(back_populates="part")
+    investments: list["Shares"] = Relationship(back_populates="part")
 
     as_person: Optional["Person"] = Relationship(back_populates="part")
     as_company: Optional["Company"] = Relationship(back_populates="part")

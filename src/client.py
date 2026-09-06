@@ -5,6 +5,7 @@ from typing import Any, TypeVar
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, SQLModel, create_engine, select
 
+from logger import setup_logger
 from settings import (
     POSTGRES_DB,
     POSTGRES_HOST,
@@ -12,7 +13,6 @@ from settings import (
     POSTGRES_PORT,
     POSTGRES_USER,
 )
-from logger import setup_logger
 
 setup_logger()
 
