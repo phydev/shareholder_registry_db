@@ -131,6 +131,12 @@ check:
 	@echo "$(BOLD)$(CYAN)► ruff check$(RESET)"
 	$(RUFF) check $(SRC_DIRS)
 
+test:
+	@echo "$(BOLD)$(CYAN)► pytest --cov$(RESET)"
+	DOCKER_HOST=unix://$$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}') \
+	TESTCONTAINERS_RYUK_DISABLED=true \
+	$(PYTEST) -s tests --cov=shareholder_registry --cov-branch --cov-report=term-missing
+
 ## Alias for check.
 lint: check
 

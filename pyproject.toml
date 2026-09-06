@@ -26,6 +26,7 @@ dev = [
     "pyright>=1.1.410",
     "pytest>=8.0",
     "pytest-cov>=5.0",
+    "testcontainers",
     "coverage[toml]>=7.0",
     "black",
     "ipython>=9.17.1"
@@ -70,11 +71,11 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.pytest.ini_options]
-testpaths     = ["/tests"]
+testpaths     = ["tests"]
 python_files  = ["*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-pythonpath = ["."]
+pythonpath = ["src/"]
 # Show short test summary and local variables on failure.
 addopts = "-v --tb=short"
 

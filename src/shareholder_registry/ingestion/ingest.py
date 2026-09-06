@@ -4,6 +4,7 @@ import logging
 
 from client import SQLClient
 from shareholder_registry.models import Company, Person, Part, Shares
+from shareholder_registry.ingestion.parsers import parse_address
 
 from logger import setup_logger
 
@@ -19,7 +20,7 @@ class CSVParser:
         self.fiscal_year = re.search(r'\d{4}', self.filename).group(0)
         self.delimiter = delimiter
         self.file = self.open_file()
-        self.reader = csv.reader(self.file)
+        self.reader = csv.reader(self.file, delimiter=self.delimiter)
         self.header = next(self.reader)
         self.header_map = self.build_header_map(self.header)
         self._client: SQLClient | None = None
@@ -32,15 +33,24 @@ class CSVParser:
         return self._client
 
     def process_row(self) -> None:
+
         row = next(self.reader)
         dict_row = self.read_row(row, self.header_map)
-        logger.info(f"Processing row: {dict_row}")
 
-        postal_code_and_location = dict_row.get("Postnr/sted")
-        postal_code, location = None, None
+        raw_address_string = dict_row.get("Postnr/sted", "")
+        parsed_address, needs_review = parse_address(raw_address_string)
 
-        if postal_code_and_location:
-            postal_code, location = dict_row.get("Postnr/sted").split(" ", 1)
+        # Log a warning for manual review if the data was corrupted
+        if needs_review:
+            logger.warning(
+                f"⚠️ Corrupted address flagged for review! "
+                f"OrgNr/ID: {dict_row.get('Fødselsår/orgnr')} | "
+                f"Cleaned: {parsed_address} | "
+                f"Original Raw Input: '{raw_address_string}'"
+            )
+
+
+        postal_code, location = parsed_address["postal_code"], parsed_address["location"]
 
         if self.is_person(dict_row):
             investor, _ = self.client.create_or_update(
@@ -62,11 +72,17 @@ class CSVParser:
             investor.part.city = location
             investor.part.country_code = dict_row["Landkode"]
 
-        target_company, _ = self.client.create_or_update(
-            model=Company,
-            lookup_kwargs={"organization_number": dict_row["Orgnr"]},
-            update_values={"name": dict_row["Selskap"]}
-        )
+        # check if the investor and the target company are the same entity
+        if not self.is_person(dict_row) and dict_row["Orgnr"] == dict_row["Fødselsår/orgnr"]:
+            target_company = investor
+
+            target_company.name = dict_row["Selskap"]
+        else:
+            target_company, _ = self.client.create_or_update(
+                model=Company,
+                lookup_kwargs={"organization_number": dict_row["Orgnr"]},
+                update_values={"name": dict_row["Selskap"]}
+            )
 
         if not target_company.part:
             target_company.part = Part()
@@ -89,7 +105,8 @@ class CSVParser:
         self.client.session.commit()
 
     def read_row(self, row: list[str], header_map: dict, delimiter=";") -> dict:
-        row = list(row[0].split(delimiter))
+        #row = list(row[0].split(delimiter))
+        logger.info(f"Processing row: {row}")
         row_dict = {}
         for _n, column in enumerate(header_map):
             row_dict[column] = row[header_map.get(column)]
@@ -102,12 +119,11 @@ class CSVParser:
         for order independent processing.
         """
 
-        header_list = list(header[0].split(';'))
-
         header_map = {}
-        for n, column in enumerate(header_list):
+        for n, column in enumerate(header):
             header_map[column] = n
 
+        logger.info(f"Building header_map: {header_map}")
         return header_map
 
     def open_file(self):

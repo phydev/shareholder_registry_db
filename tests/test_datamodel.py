@@ -4,16 +4,6 @@ from sqlmodel import Session, SQLModel, create_engine, select
 from src.shareholder_registry.models import Company, Part, Person, Shares
 
 
-@pytest.fixture(name="session")
-def session_fixture():
-    """Sets up an in-memory SQLite database for testing."""
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
-    SQLModel.metadata.create_all(engine)
-
-    with Session(engine) as session:
-        yield session
-
-
 def test_model_consistency_and_relationships(session: Session):
     # 1. Arrange: Create a Target Company (the asset being owned)
     # It must have a backing 'Part' identity envelope
