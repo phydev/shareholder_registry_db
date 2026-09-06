@@ -1,10 +1,15 @@
 from .company import Company
+from .part import Part
 from .person import Person
-from .shareholder import Shareholder
 from .shares import Shares
 
+Part.model_rebuild()
+Person.model_rebuild()
+Company.model_rebuild()
+Shares.model_rebuild()
+
 __all__ = [
-    "Shareholder",
+    "Part",
     "Shares",
     "Person",
     "Company",

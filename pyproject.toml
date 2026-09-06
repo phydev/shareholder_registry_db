@@ -69,12 +69,12 @@ combine-as-imports = true
 quote-style = "double"
 indent-style = "space"
 
-
 [tool.pytest.ini_options]
-testpaths     = ["tests"]
+testpaths     = ["/tests"]
 python_files  = ["*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+pythonpath = ["."]
 # Show short test summary and local variables on failure.
 addopts = "-v --tb=short"
 

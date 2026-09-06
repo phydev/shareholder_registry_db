@@ -1,21 +1,12 @@
 import csv
+import re
 
 from models import Company
 from src.client import SQLClient
 from src.shareholder_registry.models.company import Company
 from src.shareholder_registry.models.person import Person
-from src.shareholder_registry.models.shareholder import Shareholder
+from src.shareholder_registry.models.shareholder import Part
 from src.shareholder_registry.models.shares import Shares
-
-
-def parse_person():
-    pass
-
-def parse_company():
-    pass
-
-def parse_shares():
-    pass
 
 
 class CSVParser:
@@ -23,6 +14,7 @@ class CSVParser:
                  filename: str,
                  delimiter: str = ';'):
         self.filename = filename
+        self.fiscal_year = re.search(r'\d{4}', self.filename)
         self.delimiter = delimiter
         self.file = self.open_file()
         self.reader = csv.reader(self.file)
@@ -39,21 +31,32 @@ class CSVParser:
         row = next(self.reader)
         dict_row = self.read_row(row, self.header_map)
         postnr, sted = dict_row.get("Postnr/sted").split(" ")
-        shareholder = Shareholder(postal_code=postnr, city=sted, country_code=dict_row["Landkode"])
+
+        company = Company(
+            name=dict_row["Selskap"],
+            organization_number=dict_row["OrgNr"],
+            shareholder=Part()
+        )
+
+        shareholder = Part(postal_code=postnr, city=sted, country_code=dict_row["Landkode"])
+
         if self.is_person(dict_row):
            part = Person(
-                name=dict_row["Navn"],
+                name=dict_row["Navn aksjonær"],
                 birth_date=dict_row["Fødselsår/orgnr"],
                 shareholder=shareholder,
            )
         else:
-           part = Company(name=dict_row["Navn"],
+           part = Company(name=dict_row["Navn aksjonær"],
                     organization_number=dict_row["Fødselsår/orgnr"],
                              shareholder=shareholder)
 
-        self.client.get_or_create(model=part)
+        self.client.create_or_update(model=part)
+        self.client.create_or_update(model=company)
 
         shares = Shares(shareholder=shareholder,
+                        year=self.fiscal_year,
+
                         )
 
     def read_row(self, row: list[str], header_map: dict, delimiter=";") -> dict:

@@ -10,7 +10,6 @@ from src.logging import setup_logger
 
 setup_logger()
 
-# 2. Get a standard logger for this file
 logger = logging.getLogger(__name__)
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
@@ -64,3 +63,27 @@ class SQLClient:
         self.session.refresh(instance)
 
         return instance, True
+
+    def create_or_update(self,
+            model: type[ModelType],
+            lookup_kwargs: dict[str, Any],
+            update_values: dict[str, Any]
+    ) -> tuple[ModelType, bool]:
+
+
+        statement = select(model).filter_by(**lookup_kwargs)
+        instance = self.session.exec(statement).first()
+
+        if instance:
+            for key, value in update_values.items():
+                setattr(instance, key, value)
+            created = False
+        else:
+            params = {**lookup_kwargs, **update_values}
+            instance = model(**params)
+            self.session.add(instance)
+            created = True
+
+        self.session.commit()
+        self.session.refresh(instance)
+        return instance, created
