@@ -1,12 +1,8 @@
 import csv
 import re
 
-from models import Company
 from src.client import SQLClient
-from src.shareholder_registry.models.company import Company
-from src.shareholder_registry.models.person import Person
-from src.shareholder_registry.models.shareholder import Part
-from src.shareholder_registry.models.shares import Shares
+from src.shareholder_registry.models import Company, Person, Part, Shares
 
 
 class CSVParser:
@@ -22,9 +18,10 @@ class CSVParser:
         self.header_map = self.build_header_map(self.header)
         self._client: SQLClient | None = None
 
+    @property
     def client(self) -> SQLClient:
         if self._client is None:
-            return SQLClient()
+            self._client = SQLClient()
 
         return self._client
 

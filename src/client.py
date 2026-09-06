@@ -25,6 +25,7 @@ class SQLClient:
     def db_address(self):
         return f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
+    @property
     def engine(self) -> Engine:
         if self._engine is None:
             logger.info(f"Creating engine for {self.db_address}")
@@ -32,6 +33,7 @@ class SQLClient:
 
         return self._engine
 
+    @property
     def session(self) -> Session:
         if self._session is None:
             logger.info(f"Creating session for {self.db_address}")
