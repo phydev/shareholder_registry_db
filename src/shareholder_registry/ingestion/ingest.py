@@ -1,11 +1,10 @@
 import csv
 
-from sqlmodel import SQLModel
-
 from models import Company
+from src.client import SQLClient
+from src.shareholder_registry.models.company import Company
 from src.shareholder_registry.models.person import Person
 from src.shareholder_registry.models.shareholder import Shareholder
-from src.shareholder_registry.models.company import Company
 from src.shareholder_registry.models.shares import Shares
 
 
@@ -19,9 +18,6 @@ def parse_shares():
     pass
 
 
-
-
-
 class CSVParser:
     def __init__(self,
                  filename: str,
@@ -32,8 +28,14 @@ class CSVParser:
         self.reader = csv.reader(self.file)
         self.header = next(self.reader)
         self.header_map = self.build_header_map(self.header)
+        self.client = self.get_sql_client()
 
-    def process_row(self):
+    def get_sql_client(self) -> SQLClient:
+        if self.client:
+            return self.client
+        return SQLClient()
+
+    def process_row(self) -> None:
         row = next(self.reader)
         dict_row = self.read_row(row, self.header_map)
         postnr, sted = dict_row.get("Postnr/sted").split(" ")
@@ -49,8 +51,10 @@ class CSVParser:
                     organization_number=dict_row["Fødselsår/orgnr"],
                              shareholder=shareholder)
 
+        self.client.get_or_create(model=part)
 
-        return dict_row
+        shares = Shares(shareholder=shareholder,
+                        )
 
     def read_row(self, row: list[str], header_map: dict, delimiter=";") -> dict:
         row = list(row[0].split(delimiter))
@@ -81,16 +85,13 @@ class CSVParser:
         self.file.close()
 
     def process_file(self):
-        for row in self.reader:
-            row_dict = self.process_row(row)
+        #for row in self.reader:
+        #    row_dict = self.process_row(row) # ignore: F841
 
         self.close_file()
 
     def is_person(self, row: dict):
-        if len(row["Fødselsår/orgnr"])==4 or None:
-            return True
-        else:
-            return False
+        return len(row["Fødselsår/orgnr"]) == 4
 
 if __name__ == '__main__':
 
