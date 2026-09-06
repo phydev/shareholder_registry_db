@@ -1,6 +1,4 @@
-
-import pytest
-from sqlmodel import Session, SQLModel, create_engine, select
+from sqlmodel import Session, select
 from src.shareholder_registry.models import Company, Part, Person, Shares
 
 

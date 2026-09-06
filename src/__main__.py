@@ -1,9 +1,8 @@
-
 from shareholder_registry.ingestion.ingest import CSVParser
 
 if __name__ == "__main__":
 
-    parser = CSVParser('data/aksjeeiebok_2005.csv')
+    parser = CSVParser("data/aksjeeiebok_2005.csv")
 
     parser.client.create_tables()
 

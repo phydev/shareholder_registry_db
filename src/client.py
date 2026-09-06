@@ -5,7 +5,13 @@ from typing import Any, TypeVar
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, SQLModel, create_engine, select
 
-from settings import POSTGRES_DB, POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_USER
+from settings import (
+    POSTGRES_DB,
+    POSTGRES_HOST,
+    POSTGRES_PASSWORD,
+    POSTGRES_PORT,
+    POSTGRES_USER,
+)
 from logger import setup_logger
 
 setup_logger()
@@ -41,15 +47,14 @@ class SQLClient:
 
         return self._session
 
-
     def create_tables(self) -> None:
         SQLModel.metadata.create_all(self.engine)
 
     def get_or_create(
-            self,
-            model: type[ModelType],
-            defaults: dict[str, Any] | None = None,
-            **kwargs: Any
+        self,
+        model: type[ModelType],
+        defaults: dict[str, Any] | None = None,
+        **kwargs: Any,
     ) -> tuple[ModelType, bool]:
         statement = select(model).filter_by(**kwargs)
         instance = self.session.exec(statement).first()
@@ -66,12 +71,12 @@ class SQLClient:
 
         return instance, True
 
-    def create_or_update(self,
-            model: type[ModelType],
-            lookup_kwargs: dict[str, Any],
-            update_values: dict[str, Any]
+    def create_or_update(
+        self,
+        model: type[ModelType],
+        lookup_kwargs: dict[str, Any],
+        update_values: dict[str, Any],
     ) -> tuple[ModelType, bool]:
-
 
         statement = select(model).filter_by(**lookup_kwargs)
         instance = self.session.exec(statement).first()

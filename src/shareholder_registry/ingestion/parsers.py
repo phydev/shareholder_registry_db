@@ -8,19 +8,19 @@ def parse_address(address: str) -> tuple[dict, bool]:
     parsed_address = {"postal_code": None, "location": None}
     needs_review = False
 
-    address = address.strip().strip('"\'')
+    address = address.strip().strip("\"'")
     if not address:
         return parsed_address, needs_review
 
-    all_codes = re.findall(r'\d+', address)
+    all_codes = re.findall(r"\d+", address)
     if all_codes:
         parsed_address["postal_code"] = all_codes[0]
         if len(set(all_codes)) > 1:
             needs_review = True
 
-    text_only = re.sub(r'\d+', ' ', address)
+    text_only = re.sub(r"\d+", " ", address)
 
-    text_only = re.sub(r'\s+,\s*', ', ', text_only)
+    text_only = re.sub(r"\s+,\s*", ", ", text_only)
 
     words = text_only.split()
     seen = set()
@@ -37,10 +37,9 @@ def parse_address(address: str) -> tuple[dict, bool]:
         else:
             needs_review = True
 
-
     if unique_words:
         location = " ".join(unique_words).strip()
-        location = re.sub(r'\s+,\s*', ', ', location)
+        location = re.sub(r"\s+,\s*", ", ", location)
         parsed_address["location"] = location
     else:
         parsed_address["location"] = None

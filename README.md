@@ -1,26 +1,25 @@
-# shareholder_registry_db
+# Shareholder Registry Database
 Longitudinal database for Aksjonærregisteret: https://www.skatteetaten.no/deling/aksjonarregisteret/
 
+This repository contains 
 
 ## Setup
-### DuckDB
-Visit [duckdb](https://duckdb.org/install/?platform=macos&environment=cli) and follow the instructions for your operative system.
+- database: postgres
+- engine: SQLModel
+- infra: terraform + podman
 
 
 ## Infrastructure-as-Code
 The infrastructure is defined with terraform under the folder `/infrastructure`. 
 
-### Deploying application image to podman
-Run `make build` to build the image and `make deploy` deploy to podman registry:
+## Building & Deploying the application 
+You can build the application and the deploy to podman with two commands:
 ```bash
-podman build -t backend-registry .
+make deploy # build the image and register to podman
+make tf-deploy # deploy the application container and the postgresdb
 ```
+Check the [Makefile](Makefile) if you want to look into the details.
 
-### Deploy containers
-Run `terraform apply` to update the container with the new image. Or deploy only backend and database:
-```bash
-terraform apply -target=docker_container.backend -target=docker_container.postgresdb
-```
+## Datamodel
 
-## Accessing the API
-The application is deployed on https://localhost:8080
+![](datamodel_graph.png)

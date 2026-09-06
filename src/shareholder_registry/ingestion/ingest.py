@@ -12,12 +12,11 @@ setup_logger()
 
 logger = logging.getLogger(__name__)
 
+
 class CSVParser:
-    def __init__(self,
-                 filename: str,
-                 delimiter: str = ';'):
+    def __init__(self, filename: str, delimiter: str = ";"):
         self.filename = filename
-        self.fiscal_year = re.search(r'\d{4}', self.filename).group(0)
+        self.fiscal_year = re.search(r"\d{4}", self.filename).group(0)
         self.delimiter = delimiter
         self.file = self.open_file()
         self.reader = csv.reader(self.file, delimiter=self.delimiter)
@@ -49,31 +48,43 @@ class CSVParser:
                 f"Original Raw Input: '{raw_address_string}'"
             )
 
-
-        postal_code, location = parsed_address["postal_code"], parsed_address["location"]
+        postal_code, location = (
+            parsed_address["postal_code"],
+            parsed_address["location"],
+        )
 
         if self.is_person(dict_row):
             investor, _ = self.client.create_or_update(
                 model=Person,
-                lookup_kwargs={"name": dict_row["Navn aksjonær"], "birth_year": dict_row["Fødselsår/orgnr"]},
-                update_values={}
+                lookup_kwargs={
+                    "name": dict_row["Navn aksjonær"],
+                    "birth_year": dict_row["Fødselsår/orgnr"],
+                },
+                update_values={},
             )
         else:
             investor, _ = self.client.create_or_update(
                 model=Company,
                 lookup_kwargs={"organization_number": dict_row["Fødselsår/orgnr"]},
-                update_values={"name": dict_row["Navn aksjonær"]}
+                update_values={"name": dict_row["Navn aksjonær"]},
             )
 
         if not investor.part:
-            investor.part = Part(postal_code=postal_code, city=location, country_code=dict_row["Landkode"])
+            investor.part = Part(
+                postal_code=postal_code,
+                city=location,
+                country_code=dict_row["Landkode"],
+            )
         else:
             investor.part.postal_code = postal_code
             investor.part.city = location
             investor.part.country_code = dict_row["Landkode"]
 
         # check if the investor and the target company are the same entity
-        if not self.is_person(dict_row) and dict_row["Orgnr"] == dict_row["Fødselsår/orgnr"]:
+        if (
+            not self.is_person(dict_row)
+            and dict_row["Orgnr"] == dict_row["Fødselsår/orgnr"]
+        ):
             target_company = investor
 
             target_company.name = dict_row["Selskap"]
@@ -81,7 +92,7 @@ class CSVParser:
             target_company, _ = self.client.create_or_update(
                 model=Company,
                 lookup_kwargs={"organization_number": dict_row["Orgnr"]},
-                update_values={"name": dict_row["Selskap"]}
+                update_values={"name": dict_row["Selskap"]},
             )
 
         if not target_company.part:
@@ -93,19 +104,19 @@ class CSVParser:
                 "part": investor.part,
                 "company": target_company,
                 "year": self.fiscal_year,
-                "share_class": dict_row.get("Aksjeklasse", "Ordinære aksjer")
+                "share_class": dict_row.get("Aksjeklasse", "Ordinære aksjer"),
             },
             update_values={
                 "shares_owned": int(dict_row["Antall aksjer"]),
-                "total_shares_in_company": int(dict_row["Antall aksjer selskap"])
-            }
+                "total_shares_in_company": int(dict_row["Antall aksjer selskap"]),
+            },
         )
 
         self.client.session.add(shares)
         self.client.session.commit()
 
     def read_row(self, row: list[str], header_map: dict, delimiter=";") -> dict:
-        #row = list(row[0].split(delimiter))
+        # row = list(row[0].split(delimiter))
         logger.info(f"Processing row: {row}")
         row_dict = {}
         for _n, column in enumerate(header_map):
@@ -127,20 +138,21 @@ class CSVParser:
         return header_map
 
     def open_file(self):
-        return open(self.filename, encoding='utf-8-sig', newline='')
+        return open(self.filename, encoding="utf-8-sig", newline="")
 
     def close_file(self):
         self.file.close()
 
     def process_file(self) -> None:
         for _ in self.reader:
-            self.process_row() # ignore: F841
+            self.process_row()  # ignore: F841
 
         self.close_file()
 
     def is_person(self, row: dict):
         return len(row["Fødselsår/orgnr"]) == 4
 
-if __name__ == '__main__':
 
-    parser = CSVParser('data/aksjeeiebok_2005.csv')
+if __name__ == "__main__":
+
+    parser = CSVParser("data/aksjeeiebok_2005.csv")

@@ -9,6 +9,7 @@ requires-python = ">=3.13,<4.0"
 
 dependencies = [
     "dotenv>=0.9.9",
+    "eralchemy2>=1.4.1",
     "psycopg>=3.3.5",
     "psycopg2-binary>=2.9.12",
     "pydantic>=2.13.5",
