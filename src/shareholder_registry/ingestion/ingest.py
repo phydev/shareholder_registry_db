@@ -20,44 +20,69 @@ class CSVParser:
         self.reader = csv.reader(self.file)
         self.header = next(self.reader)
         self.header_map = self.build_header_map(self.header)
-        self.client = self.get_sql_client()
+        self._client: SQLClient | None = None
 
-    def get_sql_client(self) -> SQLClient:
-        if self.client:
-            return self.client
-        return SQLClient()
+    def client(self) -> SQLClient:
+        if self._client is None:
+            return SQLClient()
+
+        return self._client
 
     def process_row(self) -> None:
         row = next(self.reader)
         dict_row = self.read_row(row, self.header_map)
         postnr, sted = dict_row.get("Postnr/sted").split(" ")
 
-        company = Company(
-            name=dict_row["Selskap"],
-            organization_number=dict_row["OrgNr"],
-            shareholder=Part()
+        if self.is_person(dict_row):
+            investor, _ = self.client.create_or_update(model=Person,
+                                         lookup_kwargs={"name": dict_row["Navn aksjonær"],
+                                                        "birth_date": dict_row["Fødselsår/orgnr"]},
+                                         update_values={}
+                                         )
+
+        else:
+            investor, _ = self.client.create_or_update(
+                model=Company,
+                lookup_kwargs={"organization_number": dict_row["Fødselsår/orgnr"]},
+                update_values={"name": dict_row["Navn aksjonær"]}
+            )
+
+        if not investor.id_part:
+            part = Part(postal_code=postnr, city=sted, country_code=dict_row["Landkode"])
+            investor.part = part
+            self.client.session.add(investor)
+            self.client.session.commit()
+        else:
+            self.client.create_or_update(
+                model=Part,
+                lookup_kwargs={"id": investor.id_part},
+                update_values={"postal_code": postnr, "city": sted, "country_code": dict_row["Landkode"]}
+            )
+
+        target_company, _ = self.client.create_or_update(
+            model=Company,
+            lookup_kwargs={"organization_number": dict_row["OrgNr"]},
+            update_values={"name": dict_row["Selskap"]}
         )
 
-        shareholder = Part(postal_code=postnr, city=sted, country_code=dict_row["Landkode"])
+        if not target_company.id_part:
+            target_company.part = Part()
+            self.client.session.add(target_company)
+            self.client.session.commit()
 
-        if self.is_person(dict_row):
-           part = Person(
-                name=dict_row["Navn aksjonær"],
-                birth_date=dict_row["Fødselsår/orgnr"],
-                shareholder=shareholder,
-           )
-        else:
-           part = Company(name=dict_row["Navn aksjonær"],
-                    organization_number=dict_row["Fødselsår/orgnr"],
-                             shareholder=shareholder)
-
-        self.client.create_or_update(model=part)
-        self.client.create_or_update(model=company)
-
-        shares = Shares(shareholder=shareholder,
-                        year=self.fiscal_year,
-
-                        )
+        self.client.create_or_update(
+            model=Shares,
+            lookup_kwargs={
+                "id_part": investor.id_part,
+                "id_company": target_company.id,
+                "year": self.fiscal_year,
+                "share_class": dict_row.get("Aksjeklasse", "Ordinære aksjer")
+            },
+            update_values={
+                "shares_owned": int(dict_row["Antall aksjer"]),
+                "total_shares_in_company": int(dict_row["Total antall aksjer"])
+            }
+        )
 
     def read_row(self, row: list[str], header_map: dict, delimiter=";") -> dict:
         row = list(row[0].split(delimiter))
