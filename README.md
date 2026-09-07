@@ -1,7 +1,8 @@
 # Shareholder Registry Database
 Longitudinal database for Aksjonærregisteret: https://www.skatteetaten.no/deling/aksjonarregisteret/
 
-This repository contains 
+This repository contains the data model for registry, an ingestion pipeline, and the infrastructure as code. The next 
+steps in the project are developing the API and the frontend application for lookup.
 
 ## Setup
 - database: postgres
