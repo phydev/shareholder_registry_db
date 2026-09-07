@@ -1,7 +1,7 @@
 import uuid
 from uuid import UUID
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, BigInteger
 
 
 class Shares(SQLModel, table=True):
@@ -11,8 +11,8 @@ class Shares(SQLModel, table=True):
 
     year: str = Field(max_length=4)
     share_class: str = Field(max_length=100)
-    shares_owned: int
-    total_shares_in_company: int
+    shares_owned: BigInteger
+    total_shares_in_company: BigInteger
 
     part: "Part" = Relationship(back_populates="investments") # noqa: F821
     company: "Company" = Relationship(back_populates="shareholders") # noqa: F821

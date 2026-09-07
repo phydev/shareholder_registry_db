@@ -17,7 +17,7 @@ COPY pyproject.toml uv.lock ./
 
 # copy data
 RUN mkdir data
-COPY data/aksjeeiebok_2005.csv data/.
+COPY data/aksjeeiebok_2025.csv data/.
 
 # Install dependencies into the container
 RUN uv sync --no-cache

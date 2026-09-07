@@ -5,7 +5,7 @@ from src.shareholder_registry.models import Company, Part, Person, Shares
 def test_model_consistency_and_relationships(session: Session):
     # 1. Arrange: Create a Target Company (the asset being owned)
     # It must have a backing 'Part' identity envelope
-    target_company_part = Part(postal_code=None, city=None, country_code=None)
+    target_company_part = Part(postal_code=None, location=None, country_code=None)
     target_company = Company(
         name="Target AS",
         organization_number="123456789",
@@ -15,7 +15,7 @@ def test_model_consistency_and_relationships(session: Session):
     session.commit()  # Flushes IDs to SQLite
 
     # 2. Arrange: Create an individual Investor (Person)
-    investor_person_part = Part(postal_code="0484", city="Oslo", country_code="NO")
+    investor_person_part = Part(postal_code="0484", location="Oslo", country_code="NO")
     investor_person = Person(
         name="Ola Nordmann",
         birth_year="1985",
@@ -24,7 +24,7 @@ def test_model_consistency_and_relationships(session: Session):
     session.add(investor_person)
 
     # 3. Arrange: Create a corporate Investor (Company)
-    investor_company_part = Part(postal_code="5000", city="Bergen", country_code="NO")
+    investor_company_part = Part(postal_code="5000", location="Bergen", country_code="NO")
     investor_company = Company(
         name="Holding AS",
         organization_number="987654321",
@@ -75,14 +75,14 @@ def test_model_consistency_and_relationships(session: Session):
     assert person_share_record.part.as_person is not None
     assert person_share_record.part.as_person.name == "Ola Nordmann"
     assert person_share_record.part.as_company is None  # Should be mutually exclusive
-    assert person_share_record.part.city == "Oslo"  # Check address on the envelope
+    assert person_share_record.part.location == "Oslo"  # Check address on the envelope
 
     # The 40-share block belongs to Holding AS (Company)
     company_share_record = sorted_shares[1]
     assert company_share_record.part.as_company is not None
     assert company_share_record.part.as_company.name == "Holding AS"
     assert company_share_record.part.as_person is None  # Should be mutually exclusive
-    assert company_share_record.part.city == "Bergen"
+    assert company_share_record.part.location == "Bergen"
 
     # Check 3: Reverse lookup (Investor -> Investments)
     db_person_part = session.exec(select(Part).where(Part.id == investor_person_part.id)).one()

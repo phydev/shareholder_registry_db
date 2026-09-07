@@ -71,12 +71,12 @@ class CSVParser:
         if not investor.part:
             investor.part = Part(
                 postal_code=postal_code,
-                city=location,
+                location=location,
                 country_code=dict_row["Landkode"],
             )
         else:
             investor.part.postal_code = postal_code
-            investor.part.city = location
+            investor.part.location = location
             investor.part.country_code = dict_row["Landkode"]
 
         # check if the investor and the target company are the same entity

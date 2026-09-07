@@ -15,8 +15,8 @@ class Part(SQLModel, table=True):
     postal_code: str = Field(
         max_length=10, description=("Postal code for part"), nullable=True
     )
-    city: str = Field(
-        ..., max_length=100, description="City of the part", nullable=True
+    location: str = Field(
+        ..., max_length=100, description="Location of the part", nullable=True
     )
     country_code: str = Field(
         ..., max_length=3, description="Country code", nullable=True
