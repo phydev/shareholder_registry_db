@@ -1,13 +1,30 @@
 import uuid
 from uuid import UUID
 
-from sqlmodel import Field, Relationship, SQLModel, Column, BigInteger
+from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
+from sqlmodel import BigInteger, Column, Field, Relationship, SQLModel, ForeignKey
 
 
 class Shares(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    id_part: UUID = Field(foreign_key="part.id", nullable=False)
-    id_company: UUID = Field(foreign_key="company.id", nullable=False)
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True)
+    )
+
+    id_part: uuid.UUID = Field(
+        sa_column=Column(
+            PostgresUUID(as_uuid=True),
+            ForeignKey("part.id"),
+            nullable=False
+        )
+    )
+    id_company: uuid.UUID = Field(
+        sa_column=Column(
+            PostgresUUID(as_uuid=True),
+            ForeignKey("company.id"),
+            nullable=False
+        )
+    )
 
     year: str = Field(max_length=4)
     share_class: str = Field(max_length=100)

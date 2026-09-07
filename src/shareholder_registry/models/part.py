@@ -1,8 +1,8 @@
 import uuid
 from typing import TYPE_CHECKING, Optional
-from uuid import UUID
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
+from sqlmodel import Column, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .company import Company
@@ -11,7 +11,11 @@ if TYPE_CHECKING:
 
 
 class Part(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True)
+    )
+
     postal_code: str = Field(
         max_length=10, description=("Postal code for part"), nullable=True
     )

@@ -1,17 +1,25 @@
 import uuid
 from typing import TYPE_CHECKING
-from uuid import UUID
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
+from sqlmodel import Column, Field, Relationship, SQLModel, ForeignKey
 
 if TYPE_CHECKING:
     from .shares import Shares
 
 
 class Company(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    id_part: UUID = Field(
-        default_factory=uuid.uuid4, nullable=False, foreign_key="part.id"
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True)
+    )
+
+    id_part: uuid.UUID = Field(
+        sa_column=Column(
+            PostgresUUID(as_uuid=True),
+            ForeignKey("part.id"),
+            nullable=False
+        )
     )
 
     name: str = Field(..., max_length=255, description="Name of the company")
