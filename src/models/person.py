@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
-from sqlmodel import Column, Field, Relationship, SQLModel, UniqueConstraint, ForeignKey
+from sqlmodel import Column, Field, ForeignKey, Relationship, SQLModel, UniqueConstraint
 
 
 class Person(SQLModel, table=True):

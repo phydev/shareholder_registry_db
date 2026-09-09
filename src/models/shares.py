@@ -1,8 +1,7 @@
 import uuid
-from uuid import UUID
 
 from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
-from sqlmodel import BigInteger, Column, Field, Relationship, SQLModel, ForeignKey
+from sqlmodel import BigInteger, Column, Field, ForeignKey, Relationship, SQLModel
 
 
 class Shares(SQLModel, table=True):

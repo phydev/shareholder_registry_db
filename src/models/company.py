@@ -2,7 +2,7 @@ import uuid
 from typing import TYPE_CHECKING
 
 from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
-from sqlmodel import Column, Field, Relationship, SQLModel, ForeignKey
+from sqlmodel import Column, Field, ForeignKey, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .shares import Shares
