@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from src.api.v1.endpoints.company import company_router
+
+from src.api.v1.endpoints import company_router, ownership_router
 
 app = FastAPI(
-    title="Aksjonærregisteret API",
-    description="Simple API to retrieve shareholders and companies from the registry",
-    summary="This is a simple API to work with Norwegian ID numbers.",
+    title="Shareholder registry API",
+    description="Retrieve shareholders and companies from the registry",
+    summary="Read-only API.",
     version="0.0.1",
     terms_of_service="Check the MIT license.",
     contact={
@@ -30,6 +31,7 @@ async def root():
 
 
 app.include_router(company_router)
+app.include_router(ownership_router)
 
 if __name__ == "__main__":
     # run rest api with uvicorn

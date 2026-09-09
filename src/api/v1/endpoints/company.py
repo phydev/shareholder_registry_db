@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-
-from src.client import SQLClient
 from sqlmodel import select
+from src.client import SQLClient
 from src.models import Company
 
 company_router = APIRouter()

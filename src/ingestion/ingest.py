@@ -1,6 +1,7 @@
-from src.ingestion.parsers import CSVParser
-from logger import setup_logger
 import logging
+
+from logger import setup_logger
+from src.ingestion.parsers import CSVParser
 
 logger = setup_logger(level=logging.INFO)
 
