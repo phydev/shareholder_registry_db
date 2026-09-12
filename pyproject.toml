@@ -84,7 +84,7 @@ addopts = "-v --tb=short"
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["src/shareholder_registry/tests/*"]
+omit = ["tests/*"]
 
 [tool.coverage.report]
 show_missing   = true
