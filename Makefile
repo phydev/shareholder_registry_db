@@ -1,5 +1,7 @@
+RUN_ARGS    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 PYTHON      := python
 UV          := uv
+APP         := $(UV) run $(PYTHON) -m src
 RUFF        := $(UV) run ruff
 BLACK       := $(UV) run black
 PYTEST      := $(UV) run pytest
@@ -221,4 +223,10 @@ distclean: clean docs-clean
 ## Run check + test – no auto-fix.  Use this in CI pipelines.
 all: check test
 
+run-app:
+	@echo "Arguments passed: $(RUN_ARGS)"
+	$(APP) $(RUN_ARGS)
+
 ci: all
+
+$(eval $(RUN_ARGS):;@:)

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class CSVParser:
-    def __init__(self, filename: str, delimiter: str = ";"):
+    def __init__(self, filename: str | None = None, delimiter: str = ";"):
         self.filename = filename
         self.fiscal_year = re.search(r"\d{4}", self.filename).group(0)
         self.delimiter = delimiter
