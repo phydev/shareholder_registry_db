@@ -28,8 +28,6 @@ if __name__ == "__main__":
         help="Provide the fiscal years you want to ingest. (Default: 2025)",
     )
 
-    arg_parser.print_help()
-
     args = arg_parser.parse_args()
 
     if args.create_tables:
