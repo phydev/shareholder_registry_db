@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from src.shareholder_registry.models import Company, Part, Person, Shares
+from src.models import Company, Part, Person, Shares
 
 
 def test_model_consistency_and_relationships(session: Session):

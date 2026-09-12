@@ -1,4 +1,4 @@
-from src.shareholder_registry.ingestion.parsers import parse_address
+from src.ingestion.parsers import parse_address
 
 
 def test_parse_address_standard_norwegian():
