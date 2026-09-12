@@ -6,12 +6,14 @@ from client import SQLClient
 
 logger = setup_logger(level=logging.INFO)
 
+
 def create_tables() -> None:
     """
     create tables in the database
     """
     db_client = SQLClient()
     db_client.create_tables()
+
 
 def run_ingestion(years: list[str]) -> None:
     """
@@ -25,6 +27,7 @@ def run_ingestion(years: list[str]) -> None:
         parser.process_file()
 
         parser.close_file()
+
 
 if __name__ == "__main__":
     create_tables()

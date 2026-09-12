@@ -6,18 +6,26 @@ def test_model_consistency_and_relationships(session: Session):
     # 1. Arrange: Create a Target Company (the asset being owned)
     # It must have a backing 'Part' identity envelope
     target_company_part = Part(postal_code=None, location=None, country_code=None)
-    target_company = Company(name="Target AS", organization_number="123456789", part=target_company_part)
+    target_company = Company(
+        name="Target AS", organization_number="123456789", part=target_company_part
+    )
     session.add(target_company)
     session.commit()  # Flushes IDs to SQLite
 
     # 2. Arrange: Create an individual Investor (Person)
     investor_person_part = Part(postal_code="0484", location="Oslo", country_code="NO")
-    investor_person = Person(name="Ola Nordmann", birth_year="1985", part=investor_person_part)
+    investor_person = Person(
+        name="Ola Nordmann", birth_year="1985", part=investor_person_part
+    )
     session.add(investor_person)
 
     # 3. Arrange: Create a corporate Investor (Company)
-    investor_company_part = Part(postal_code="5000", location="Bergen", country_code="NO")
-    investor_company = Company(name="Holding AS", organization_number="987654321", part=investor_company_part)
+    investor_company_part = Part(
+        postal_code="5000", location="Bergen", country_code="NO"
+    )
+    investor_company = Company(
+        name="Holding AS", organization_number="987654321", part=investor_company_part
+    )
     session.add(investor_company)
     session.commit()
 
@@ -49,14 +57,18 @@ def test_model_consistency_and_relationships(session: Session):
     # ----------------------------------------------------
 
     # Query the target company from the database
-    db_company = session.exec(select(Company).where(Company.organization_number == "123456789")).one()
+    db_company = session.exec(
+        select(Company).where(Company.organization_number == "123456789")
+    ).one()
 
     # Check 1: Does the target company know who its shareholders are via 'Shares'?
     assert len(db_company.shareholders) == 2
 
     # Check 2: Verify polymorphic attributes (Identity Resolution)
     # Sort shareholders by shares owned so we can cleanly test individual vs corporate
-    sorted_shares = sorted(db_company.shareholders, key=lambda s: s.shares_owned, reverse=True)
+    sorted_shares = sorted(
+        db_company.shareholders, key=lambda s: s.shares_owned, reverse=True
+    )
 
     # The 60-share block belongs to Ola Nordmann (Person)
     person_share_record = sorted_shares[0]
@@ -73,6 +85,8 @@ def test_model_consistency_and_relationships(session: Session):
     assert company_share_record.part.location == "Bergen"
 
     # Check 3: Reverse lookup (Investor -> Investments)
-    db_person_part = session.exec(select(Part).where(Part.id == investor_person_part.id)).one()
+    db_person_part = session.exec(
+        select(Part).where(Part.id == investor_person_part.id)
+    ).one()
     assert len(db_person_part.investments) == 1
     assert db_person_part.investments[0].company.name == "Target AS"

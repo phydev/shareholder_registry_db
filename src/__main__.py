@@ -1,3 +1,4 @@
+import sys
 import argparse
 from src.ingestion import create_tables, run_ingestion
 
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     arg_parser.add_argument(
         "--ingest",
         required=False,
-        type=str,
+        action="store_true",
         help="Start the ingestion pipeline to create the database and import the data.",
     )
 
@@ -28,8 +29,16 @@ if __name__ == "__main__":
         help="Provide the fiscal years you want to ingest. (Default: 2025)",
     )
 
+    if len(sys.argv) == 1:
+        arg_parser.print_help()
+        sys.exit(0)
+
     args = arg_parser.parse_args()
 
     if args.create_tables:
         create_tables()
 
+    if args.ingest:
+
+        years = args.years.split(",")
+        run_ingestion(years)
