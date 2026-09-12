@@ -223,6 +223,12 @@ distclean: clean docs-clean
 ## Run check + test – no auto-fix.  Use this in CI pipelines.
 all: check test
 
+create-tables:
+	$(APP) --create-tables
+
+ingest:
+	$(APP) --ingest --years $(RUN_ARGS)
+
 run-app:
 	@echo "Arguments passed: $(RUN_ARGS)"
 	$(APP) $(RUN_ARGS)

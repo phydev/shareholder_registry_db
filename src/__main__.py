@@ -39,6 +39,5 @@ if __name__ == "__main__":
         create_tables()
 
     if args.ingest:
-
         years = args.years.split(",")
         run_ingestion(years)
