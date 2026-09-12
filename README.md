@@ -7,6 +7,7 @@ steps in the project are developing the API and the frontend application for loo
 # Table of contents
 - [Requirements](#requirements)
 - [Get started](#get-started)
+- [Data model](docs/datamodel.md)
 
 # Requirements
 - python: 3.13

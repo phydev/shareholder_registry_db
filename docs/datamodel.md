@@ -1,3 +1,3 @@
 # Data Model
 
-![](datamodel_graph.png)
+![](../datamodel_graph.png)
