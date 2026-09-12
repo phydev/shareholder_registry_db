@@ -1,6 +1,9 @@
+RUN_ARGS    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 PYTHON      := python
 UV          := uv
+APP         := $(UV) run $(PYTHON) -m src
 RUFF        := $(UV) run ruff
+BLACK       := $(UV) run black
 PYTEST      := $(UV) run pytest
 COVERAGE    := $(UV) run coverage
 SPHINX      := $(UV) run --group docs sphinx-build
@@ -128,8 +131,8 @@ upgrade:
 
 ## Lint – run ruff check without modifying files (exits 1 on violations).
 check:
-	@echo "$(BOLD)$(CYAN)► ruff check$(RESET)"
-	$(RUFF) check $(SRC_DIRS)
+	@echo "$(BOLD)$(CYAN)► ruff format --check$(RESET)"
+	$(RUFF) format --check $(SRC_DIRS)
 
 test:
 	@echo "$(BOLD)$(CYAN)► pytest --cov$(RESET)"
@@ -140,17 +143,14 @@ test:
 ## Alias for check.
 lint: check
 
-## Format check – verify formatting without modifying files.
-format:
-	@echo "$(BOLD)$(CYAN)► ruff format --check$(RESET)"
-	$(RUFF) format --check $(SRC_DIRS)
+black:
+	@echo "$(BOLD)$(CYAN)► black format$(RESET)"
+	$(BLACK) $(SRC_DIRS)
 
-## Auto-format – rewrite files to comply with ruff formatting rules.
-fmt:
+format:
 	@echo "$(BOLD)$(CYAN)► ruff format$(RESET)"
 	$(RUFF) format $(SRC_DIRS)
 
-## Fix – auto-fix all safe lint violations, then auto-format.
 fix:
 	@echo "$(BOLD)$(CYAN)► ruff check --fix$(RESET)"
 	$(RUFF) check --fix $(SRC_DIRS)
@@ -223,4 +223,16 @@ distclean: clean docs-clean
 ## Run check + test – no auto-fix.  Use this in CI pipelines.
 all: check test
 
+create-tables:
+	$(APP) --create-tables
+
+ingest:
+	$(APP) --ingest --years $(RUN_ARGS)
+
+run-app:
+	@echo "Arguments passed: $(RUN_ARGS)"
+	$(APP) $(RUN_ARGS)
+
 ci: all
+
+$(eval $(RUN_ARGS):;@:)

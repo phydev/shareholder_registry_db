@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
-from sqlmodel import Column, Field, Relationship, SQLModel, UniqueConstraint, ForeignKey
+from sqlmodel import Column, Field, ForeignKey, Relationship, SQLModel, UniqueConstraint
 
 
 class Person(SQLModel, table=True):
@@ -11,14 +11,12 @@ class Person(SQLModel, table=True):
 
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
-        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True)
+        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True),
     )
 
     id_part: uuid.UUID = Field(
         sa_column=Column(
-            PostgresUUID(as_uuid=True),
-            ForeignKey("part.id"),
-            nullable=False
+            PostgresUUID(as_uuid=True), ForeignKey("part.id"), nullable=False
         )
     )
 
@@ -29,4 +27,4 @@ class Person(SQLModel, table=True):
         description=("Birth year for shareholders identified in the National Registry"),
     )
 
-    part: "Part" = Relationship(back_populates="as_person") # noqa: F821
+    part: "Part" = Relationship(back_populates="as_person")  # noqa: F821

@@ -19,7 +19,9 @@ def postgres_container(request: pytest.FixtureRequest) -> PostgresContainer:
 
 
 @pytest.fixture(name="session")
-def session_fixture(postgres_container: PostgresContainer) -> Generator[Session, None, None]:
+def session_fixture(
+    postgres_container: PostgresContainer,
+) -> Generator[Session, None, None]:
     """Creates a new SQLModel session connected to the active local container."""
     # Dynamically gets the URL with the randomized port assigned by your Mac's Docker
     connection_url = postgres_container.get_connection_url()

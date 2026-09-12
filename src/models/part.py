@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class Part(SQLModel, table=True):
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
-        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True)
+        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True),
     )
 
     postal_code: str = Field(
