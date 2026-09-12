@@ -6,30 +6,18 @@ def test_model_consistency_and_relationships(session: Session):
     # 1. Arrange: Create a Target Company (the asset being owned)
     # It must have a backing 'Part' identity envelope
     target_company_part = Part(postal_code=None, location=None, country_code=None)
-    target_company = Company(
-        name="Target AS",
-        organization_number="123456789",
-        part=target_company_part
-    )
+    target_company = Company(name="Target AS", organization_number="123456789", part=target_company_part)
     session.add(target_company)
     session.commit()  # Flushes IDs to SQLite
 
     # 2. Arrange: Create an individual Investor (Person)
     investor_person_part = Part(postal_code="0484", location="Oslo", country_code="NO")
-    investor_person = Person(
-        name="Ola Nordmann",
-        birth_year="1985",
-        part=investor_person_part
-    )
+    investor_person = Person(name="Ola Nordmann", birth_year="1985", part=investor_person_part)
     session.add(investor_person)
 
     # 3. Arrange: Create a corporate Investor (Company)
     investor_company_part = Part(postal_code="5000", location="Bergen", country_code="NO")
-    investor_company = Company(
-        name="Holding AS",
-        organization_number="987654321",
-        part=investor_company_part
-    )
+    investor_company = Company(name="Holding AS", organization_number="987654321", part=investor_company_part)
     session.add(investor_company)
     session.commit()
 
@@ -40,7 +28,7 @@ def test_model_consistency_and_relationships(session: Session):
         year="2025",
         share_class="A",
         shares_owned=60,
-        total_shares_in_company=100
+        total_shares_in_company=100,
     )
     shares2 = Shares(
         id_part=investor_company_part.id,
@@ -48,7 +36,7 @@ def test_model_consistency_and_relationships(session: Session):
         year="2025",
         share_class="A",
         shares_owned=40,
-        total_shares_in_company=100
+        total_shares_in_company=100,
     )
     session.add_all([shares1, shares2])
     session.commit()

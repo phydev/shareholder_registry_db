@@ -1,3 +1,5 @@
 from .parsers import CSVParser
 
-__all__ = ['CSVParser',]
+__all__ = [
+    "CSVParser",
+]

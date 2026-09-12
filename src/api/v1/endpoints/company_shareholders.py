@@ -8,8 +8,7 @@ ownership_router = APIRouter()
 
 
 @ownership_router.get(
-    "/company/{organization_number}/owners",
-    response_model=CompanyOwnershipResponse
+    "/company/{organization_number}/owners", response_model=CompanyOwnershipResponse
 )
 def get_company_owners(organization_number: str, db: SQLClient = Depends(SQLClient)):
     """
@@ -17,18 +16,18 @@ def get_company_owners(organization_number: str, db: SQLClient = Depends(SQLClie
     along with their calculated fractional ownership.
     """
 
-    company_stmt = select(Company).where(Company.organization_number == organization_number)
+    company_stmt = select(Company).where(
+        Company.organization_number == organization_number
+    )
     company = db.session.exec(company_stmt).first()
 
     if not company:
         raise HTTPException(
-            status_code=404,
-            detail=f"Company not found: {organization_number}"
+            status_code=404, detail=f"Company not found: {organization_number}"
         )
 
     shares_stmt = select(Shares).where(Shares.id_company == company.id)
     shares_records = db.session.exec(shares_stmt).all()
-
 
     shareholders_list = []
     for share in shares_records:
@@ -45,12 +44,12 @@ def get_company_owners(organization_number: str, db: SQLClient = Depends(SQLClie
             name=name,
             owner_type=owner_type,
             shares_owned=share.shares_owned,
-            total_shares_in_company=share.total_shares_in_company
+            total_shares_in_company=share.total_shares_in_company,
         )
         shareholders_list.append(shareholder_data)
 
     return CompanyOwnershipResponse(
         organization_number=company.organization_number,
         company_name=company.name,
-        shareholders=shareholders_list
+        shareholders=shareholders_list,
     )

@@ -7,6 +7,7 @@ class PartType(StrEnum):
     person = "person"
     company = "company"
 
+
 class ShareholderOut(BaseModel):
     name: str
     owner_type: PartType
@@ -22,6 +23,7 @@ class ShareholderOut(BaseModel):
         if self.total_shares_in_company == 0:
             return 0.0
         return self.shares_owned / self.total_shares_in_company
+
 
 class CompanyOwnershipResponse(BaseModel):
     organization_number: str

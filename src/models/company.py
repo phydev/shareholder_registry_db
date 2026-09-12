@@ -11,14 +11,12 @@ if TYPE_CHECKING:
 class Company(SQLModel, table=True):
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
-        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True)
+        sa_column=Column(PostgresUUID(as_uuid=True), primary_key=True),
     )
 
     id_part: uuid.UUID = Field(
         sa_column=Column(
-            PostgresUUID(as_uuid=True),
-            ForeignKey("part.id"),
-            nullable=False
+            PostgresUUID(as_uuid=True), ForeignKey("part.id"), nullable=False
         )
     )
 
@@ -28,6 +26,6 @@ class Company(SQLModel, table=True):
         ..., max_length=9, description="Organization number", unique=True
     )
 
-    part: "Part" = Relationship(back_populates="as_company") # noqa: F821
+    part: "Part" = Relationship(back_populates="as_company")  # noqa: F821
 
-    shareholders: list["Shares"] = Relationship(back_populates="company") # noqa: F821
+    shareholders: list["Shares"] = Relationship(back_populates="company")  # noqa: F821

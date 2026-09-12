@@ -7,7 +7,6 @@ logger = setup_logger(level=logging.INFO)
 
 
 if __name__ == "__main__":
-
     parser = CSVParser("data/aksjeeiebok_2025.csv")
 
     parser.client.create_tables()
