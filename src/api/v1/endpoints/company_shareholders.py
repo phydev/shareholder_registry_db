@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
+from src.api.schemas.shareholder import CompanyOwnershipResponse, Shareholder
 from src.client import SQLClient
 from src.models import Company, Shares
-from src.schemas.shareholder import CompanyOwnershipResponse, ShareholderOut
 
-ownership_router = APIRouter()
+company_shareholder_router = APIRouter(prefix="/company", tags=["Company"])
 
 
-@ownership_router.get(
-    "/company/{organization_number}/owners", response_model=CompanyOwnershipResponse
+@company_shareholder_router.get(
+    "/{organization_number}/owners", response_model=CompanyOwnershipResponse
 )
 def get_company_owners(organization_number: str, db: SQLClient = Depends(SQLClient)):
     """
@@ -40,7 +40,7 @@ def get_company_owners(organization_number: str, db: SQLClient = Depends(SQLClie
             name = part_record.as_company.name
             owner_type = "company"
 
-        shareholder_data = ShareholderOut(
+        shareholder_data = Shareholder(
             name=name,
             owner_type=owner_type,
             shares_owned=share.shares_owned,

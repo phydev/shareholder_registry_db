@@ -8,7 +8,7 @@ class PartType(StrEnum):
     company = "company"
 
 
-class ShareholderOut(BaseModel):
+class Shareholder(BaseModel):
     name: str
     owner_type: PartType
     shares_owned: int
@@ -28,4 +28,4 @@ class ShareholderOut(BaseModel):
 class CompanyOwnershipResponse(BaseModel):
     organization_number: str
     company_name: str
-    shareholders: list[ShareholderOut]
+    shareholders: list[Shareholder]

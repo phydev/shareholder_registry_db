@@ -1,10 +1,10 @@
 import logging
 
+from client import SQLClient
 from logger import setup_logger
 from src.ingestion.parsers import CSVParser
-from client import SQLClient
 
-logger = setup_logger(level=logging.INFO)
+logger = setup_logger(level=logging.ERROR)
 
 
 def create_tables() -> None:

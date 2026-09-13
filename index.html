@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Ownership Network</title>
+    <!-- Include vis-network CDN -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #network {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e1e8ed;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        .error {
+            color: #e74c3c;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Company Ownership Network</h1>
+    <div class="search-box">
+        <input type="text" id="orgnrInput" maxlength="9" placeholder="Enter 9-digit Org Number" value="">
+        <button onclick="handleSearch()">Search</button>
+    </div>
+    <div id="errorMsg" class="error"></div>
+    <div id="network"></div>
+</div>
+
+<script>
+    let networkInstance = null;
+
+    /**
+     * Fetch function configured to talk to your FastAPI backend.
+     */
+    async function fetchCompanyOwners(orgnr) {
+        const url = `http://localhost:8080/company/${orgnr}/owners`;
+
+        const response = await fetch(url);
+
+        // Handle specific HTTP error statuses
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error("Company not found (404). Please verify the 9-digit organization number.");
+            } else if (response.status === 500) {
+                throw new Error("Internal server error (500). The backend encountered an issue.");
+            } else {
+                throw new Error(`Unexpected server error (Status: ${response.status})`);
+            }
+        }
+
+        return await response.json();
+    }
+
+    async function handleSearch() {
+        const orgnr = document.getElementById('orgnrInput').value.trim();
+        const errorDiv = document.getElementById('errorMsg');
+        errorDiv.textContent = "";
+
+        const regex = /^\d{9}$/;
+        if (!regex.test(orgnr)) {
+            errorDiv.textContent = "Please enter a valid 9-digit organization number.";
+            return;
+        }
+
+        try {
+            const data = await fetchCompanyOwners(orgnr);
+            renderNetwork(data);
+        } catch (err) {
+            console.error('Failed to fetch data:', err);
+
+            // Display the user-friendly error message
+            errorDiv.textContent = err.message || "Network error. Please check if the backend is running.";
+
+            // Clear the network view if an error occurs
+            if (networkInstance) {
+                networkInstance.destroy();
+                networkInstance = null;
+            }
+        }
+    }
+    function renderNetwork(data) {
+        // 1. Create central company node
+        const nodesArray = [{
+            id: 'company_' + data.organization_number,
+            label: `${data.company_name}\n(Org: ${data.organization_number})`,
+            shape: 'box',
+            color: { background: '#2c3e50', border: '#1a252f' },
+            font: { color: '#ffffff', face: 'Arial', multi: true },
+            margin: 12,
+            size: 30
+        }];
+
+        const edgesArray = [];
+
+        // 2. Create shareholder nodes and edges
+        data.shareholders.forEach((sh, index) => {
+            const shId = 'sh_' + index;
+            const percent = (sh.ownership_fraction * 100).toFixed(1);
+
+            // Color code: Green for person, Orange for company
+            const bgColor = sh.owner_type === 'person' ? 'rgb(39 127 174 / 0.77)' : 'rgb(41 34 230 / 0.67)';
+
+            nodesArray.push({
+                id: shId,
+                label: `${sh.name}\nOwnership: ${percent}%`,
+                shape: 'ellipse',
+                color: { background: bgColor, border: '#61a1c2' },
+                font: { color: '#ffffff', face: 'Arial', multi: true }
+            });
+
+            edgesArray.push({
+                from: 'company_' + data.organization_number,
+                to: shId,
+                label: `${percent}%`,
+                arrows: 'to',
+                color: { color: '#95a5a6' },
+                font: { align: 'middle', background: '#ffffff' }
+            });
+        });
+
+        const container = document.getElementById('network');
+        const networkData = {
+            nodes: new vis.DataSet(nodesArray),
+            edges: new vis.DataSet(edgesArray)
+        };
+
+        const options = {
+            physics: {
+                barnesHut: {
+                    gravitationalConstant: -5000,
+                    centralGravity: 0.02,
+                    springLength: 400
+                }
+            },
+            interaction: { hover: true }
+        };
+
+        if (networkInstance) {
+            networkInstance.destroy();
+        }
+        networkInstance = new vis.Network(container, networkData, options);
+    }
+
+    // Optional: Auto-load on page load if desired
+    // window.onload = handleSearch;
+</script>
+
+</body>
+</html>

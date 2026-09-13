@@ -1,5 +1,6 @@
-import sys
 import argparse
+import sys
+
 from src.ingestion import create_tables, run_ingestion
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 
+from .middleware import CORS
+
 app = FastAPI(
     title="Shareholder registry API",
     description="Retrieve shareholders and companies from the registry",
@@ -15,3 +17,5 @@ app = FastAPI(
         "url": "https://opensource.org/license/mit",
     },
 )
+
+app.add_middleware(**CORS)
