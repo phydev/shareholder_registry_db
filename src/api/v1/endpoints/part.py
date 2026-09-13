@@ -4,9 +4,24 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from src.api.schemas import PartType
 from src.client import SQLClient
-from src.models import Company, Person, Shares
+from src.models import Company, Person, Shares, Part
 
 part_route = APIRouter(prefix="/part", tags=["Part"])
+
+@part_route.get("/{id_part}")
+def get_part(id_part: UUID, db: SQLClient = Depends(SQLClient)):
+    query = select(Part).where(
+       Part.id == id_part
+    )
+
+    results = db.session.exec(query).one()
+
+    if not results:
+        raise HTTPException(
+            status_code=404, detail=f"Part not found: {id_part}"
+        )
+    return results
+
 
 
 @part_route.get("/search/{name}")

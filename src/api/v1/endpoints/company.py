@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlmodel import select
 from src.client import SQLClient
 from src.models import Company
@@ -21,12 +21,14 @@ def read_company(organization_number: str, db: SQLClient = Depends(SQLClient)):
         )
     return company
 
-@company_router.post("/", response_model=list[Company])
-def list_companies(db: SQLClient = Depends(SQLClient)):
+@company_router.get("/", response_model=list[Company])
+def list_companies(db: SQLClient = Depends(SQLClient),
+                   offset: int = 0,
+                   limit: int = Query(default=100, le=100)):
     """
     List all companies in the registry
     """
-    statement = select(Company)
+    statement = select(Company).offset(offset).limit(limit)
 
     companies = db.session.exec(statement).all()
 
