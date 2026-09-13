@@ -20,3 +20,14 @@ def read_company(organization_number: str, db: SQLClient = Depends(SQLClient)):
             status_code=404, detail=f"Company not found: {organization_number}"
         )
     return company
+
+@company_router.post("/", response_model=list[Company])
+def list_companies(db: SQLClient = Depends(SQLClient)):
+    """
+    List all companies in the registry
+    """
+    statement = select(Company)
+
+    companies = db.session.exec(statement).all()
+
+    return companies

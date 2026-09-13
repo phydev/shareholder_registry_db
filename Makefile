@@ -2,6 +2,7 @@ RUN_ARGS    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 PYTHON      := python
 UV          := uv
 APP         := $(UV) run $(PYTHON) -m src
+API         := $(UV) run $(PYTHON) -m src.api.main
 RUFF        := $(UV) run ruff
 BLACK       := $(UV) run black
 PYTEST      := $(UV) run pytest
@@ -232,6 +233,10 @@ ingest:
 run-app:
 	@echo "Arguments passed: $(RUN_ARGS)"
 	$(APP) $(RUN_ARGS)
+
+start-api:
+	@echo "$(BOLD)$(CYAN)► Starting Rest API$(RESET)"
+	$(API)
 
 ci: all
 
