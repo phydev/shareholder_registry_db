@@ -80,9 +80,6 @@
 <script>
     let networkInstance = null;
 
-    /**
-     * Fetch function configured to talk to your FastAPI backend.
-     */
     async function fetchCompanyOwners(orgnr) {
         const url = `http://localhost:8080/company/${orgnr}/owners`;
 
@@ -119,7 +116,6 @@
         } catch (err) {
             console.error('Failed to fetch data:', err);
 
-            // Display the user-friendly error message
             errorDiv.textContent = err.message || "Network error. Please check if the backend is running.";
 
             // Clear the network view if an error occurs
@@ -148,7 +144,7 @@
             const shId = 'sh_' + index;
             const percent = (sh.ownership_fraction * 100).toFixed(1);
 
-            // Color code: Green for person, Orange for company
+
             const bgColor = sh.owner_type === 'person' ? 'rgb(39 127 174 / 0.77)' : 'rgb(41 34 230 / 0.67)';
 
             nodesArray.push({
